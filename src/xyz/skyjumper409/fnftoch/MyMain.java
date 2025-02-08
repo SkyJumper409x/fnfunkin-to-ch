@@ -1,23 +1,26 @@
 package xyz.skyjumper409.fnftoch;
 
+import static xyz.skyjumper409.fnftoch.Utils.chPrintln;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.PrintWriter;
-
-import java.util.Comparator;
 import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.Comparator;
 
-import org.json.*;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import xyz.skyjumper409.fnftoch.fnf.FNFNote;
 import xyz.skyjumper409.fnftoch.fnf.FNFSection;
-import static xyz.skyjumper409.fnftoch.Utils.chPrintln;
 
 public class MyMain {
-    private static boolean enableStarPower = true;
     public static void main(String[] args) {
+        parseArgsAndGo(args);
+    }
+    public static void parseArgsAndGo(String[] args) {
         if(args.length < 1) {
             Utils.die("not enough arguments (missing input file argument)");
         }
@@ -26,24 +29,55 @@ public class MyMain {
             System.err.println("file not found");
             System.exit(1);
         }
+        MyMain myMain = new MyMain();
         String workingDirpath = System.getProperty("user.dir");
         File outputDir = null;
         for(int i = 1; i < args.length; i++) {
-            if(args[i].indexOf("--output-dir=") != -1) {
+            String arg = args[i];
+            if(arg.indexOf("--output-dir=") != -1) {
                 if(outputDir != null) {
                     Utils.die("--output-dir= was specified multiple times");
                 }
-                String outDirPath = args[i].substring("--output-dir=".length());
+                String outDirPath = arg.substring("--output-dir=".length());
                 if(!outDirPath.startsWith("/") && !(
-                    (outDirPath.charAt(0)+"").matches("[A-Z]") && outDirPath.charAt(1) == ':' && "/\\".contains(outDirPath.charAt(2)+"")
+                    (outDirPath.charAt(0)+"").matches("[A-Z]") && outDirPath.charAt(1) == ':' && "/\\".contains(outDirPath.charAt(2)+"") // wtf is this line who wrote this (me)
                 )) {
                     outDirPath = workingDirpath + "/" + outDirPath;
                 }
                 outputDir = new File(outDirPath);
             }
-            switch(args[i]) {
-                case "--noStarpower":
-                    enableStarPower = false;
+            switch(arg) {
+                case "--enableStarPower":
+                    myMain.settings.enableStarPower = true;
+                    continue;
+                case "--noStarPower":
+                    myMain.settings.enableStarPower = false;
+                    continue;
+                case "--enableSplitChart":
+                    myMain.settings.createSplitChart = true;
+                    continue;
+                case "--noSplitChart":
+                    myMain.settings.createSplitChart = false;
+                    continue;
+                default:
+                    /*
+                    * The equalsSignIndex stuff could be hardcoded for each option, which
+                    * would probably save like a nanosecond, but I'm not bothering with that,
+                    * because it has negative impact on readability.
+                    */
+                    int equalsSignIndex = arg.indexOf('=');
+                    if(equalsSignIndex < 0) {
+                        continue;
+                    } else if(equalsSignIndex+1 == arg.length()) {
+                        Utils.die("Missing argument value for \"" + arg + "\"");
+                    }
+                    String argValueString = arg.substring(equalsSignIndex+1);
+                    boolean argValue = Utils.parseHumanBoolean(argValueString, true);
+                    if(arg.startsWith("--enableStarPower=")) {
+                        myMain.settings.enableStarPower = argValue;
+                    } else if(arg.startsWith("--enableSplitChart=")) {
+                        myMain.settings.createSplitChart = argValue;
+                    }
                     continue;
             }
         }
@@ -53,8 +87,9 @@ public class MyMain {
         if(!outputDir.isDirectory()) {
             Utils.die("output directory doesn't exist or isn't a directory");
         }
-        new MyMain().go(file, outputDir);
+        myMain.go(file, outputDir);
     }
+    private final ProgramSettings settings = new ProgramSettings();
     public void go(File inFile, File outputDir) {
         try {
             JSONObject rootObj = new JSONObject(new JSONTokener(new FileInputStream(inFile)));
@@ -202,7 +237,7 @@ public class MyMain {
                     }
                 }
             }
-            if(enableStarPower) {
+            if(settings.enableStarPower) {
                 generateStarPower(noteStringsLead);
                 generateStarPower(noteStringsCoop);
                 generateStarPower(noteStringsRythm);
@@ -246,6 +281,6 @@ public class MyMain {
         chPrintln(pr, "}");
     }
     private void generateStarPower(ArrayList<String> noteStrings) {
-        System.out.println("TODO: add starpower");
+        System.out.println("TODO: add star power");
     }
 }

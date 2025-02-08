@@ -5,7 +5,7 @@ Writing these down here so I don't forget anything
 ## Fixes
 
 ## QOL/Improvements
-- Improve starpower generation:
+- Improve star power generation:
   - account for large breaks
   - account for long sustains
   - account for song end (stop putting phrases 4 bars before the last note)

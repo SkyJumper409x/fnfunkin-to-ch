@@ -36,4 +36,21 @@ public class Utils {
         }
         return result;
     }
+    public static int roundToNextBarTick(int noteTick) {
+        return roundToNextBarTick(noteTick, Constants.defaultTicksPerBeat);
+    }
+    public static int roundToNextBarTick(int noteTick, int ticksPerBeat) {
+        // boldly assuming 4/4
+        // this also assuming that the first bar starts on tick 0 but itll be fiiiine
+        double ticksPerBar = 4*ticksPerBeat;
+        return (int) (Math.ceil(((double)noteTick)/ticksPerBar)*ticksPerBar);
+    }
+    public static int roundToCurrentBarTick(int noteTick) {
+        return roundToCurrentBarTick(noteTick, Constants.defaultTicksPerBeat);
+    }
+    public static int roundToCurrentBarTick(int noteTick, int ticksPerBeat) {
+        // same thing but floor instead of ceil
+        double ticksPerBar = 4*ticksPerBeat;
+        return (int) (Math.floor(((double)noteTick)/ticksPerBar)*ticksPerBar);
+    }
 }

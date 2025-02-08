@@ -8,7 +8,7 @@ Writing these down here so I don't forget anything
 - Improve star power generation:
   - account for large breaks
   - account for long sustains
-  - account for song end (stop putting phrases 4 bars before the last note)
+  - account for song end (stop putting phrases 4-6 bars before the last note) (this is technically done but it's only in the bad sp code)
 ## Additions
 - Support BPM changes and non-4/4-sections  
 Currently, the way the code works, this would require iterating over all sections in multiple places;  
@@ -23,7 +23,7 @@ If not (or: as the default value): Which difficulty to leave empty?
   - Expert to leave space for accurate chart  
   - Medium because ??? idk
 - Toggleable options for generation process:
-  - Split generation (maybe as co-op guitar + rythm? if that is done is a toggle even needed?)
+  - Split generation (as this already exists and splits the charts to coop and rythm guitar, does it even need a toggle?)
   - GRYB instead of RYBO
   - reading song metadata from supplied song.ini
 

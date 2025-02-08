@@ -172,7 +172,7 @@ public class MyMain {
             pr.print("[Song]"); pr.print(Constants.chChartNewline);
             chPrintln(pr, "{");
             chPrintln(pr, "  Name = \""+songObj.getString("song") + "\"");
-            chPrintln(pr, "  Artist = \""+songObj.getString("player1")+","+songObj.getString("player2")+","+songObj.getString("player3") + "\"");
+            chPrintln(pr, "  Artist = \""+songObj.getString("player1")+","+songObj.getString("player2")+(songObj.isNull("player3") ? "" : ","+songObj.getString("player3")) + "\"");
             chPrintln(pr, "  Album = \"unknown\"");
             chPrintln(pr, "  Year = \", 6969\"");
             chPrintln(pr, "  Offset = 0");
@@ -264,7 +264,11 @@ public class MyMain {
     public static final Comparator<String> noteStringComparator = new Comparator<String>() {
         @Override
         public int compare(String arg0, String arg1) {
-            return Integer.parseInt(arg0.substring(2,arg0.indexOf(" = "))) - Integer.parseInt(arg1.substring(2,arg1.indexOf(" = ")));
+            int eqIdx0 = arg0.indexOf(" = "), eqIdx1 = arg1.indexOf(" = ");
+            int typeDiff = ((arg0.charAt(eqIdx1+3) == 'S' ? 2 : 1) - (arg1.charAt(eqIdx1+3) == 'S' ? 2 : 1) + 1);
+            assert(typeDiff >= 0);
+            return ((Integer.parseInt(arg0.substring(2,eqIdx0)) - Integer.parseInt(arg1.substring(2,eqIdx1)))
+            << 2) | ((arg0.charAt(eqIdx1+3) == 'S' ? 2 : 1) - (arg1.charAt(eqIdx1+3) == 'S' ? 2 : 1) + 1);
         }  
     };
     private static final String[] chDiffs = new String[]{"Easy", "Medium", "Hard", "Expert"};
@@ -281,6 +285,47 @@ public class MyMain {
         chPrintln(pr, "}");
     }
     private void generateStarPower(ArrayList<String> noteStrings) {
-        System.out.println("TODO: add star power");
+        ArrayList<String> phraseStrings = new ArrayList<String>();
+        java.util.Collections.sort(noteStrings, noteStringComparator);
+
+        String firstNoteString = noteStrings.get(0);
+        int previousNoteTick = Integer.parseInt(firstNoteString.substring(2,firstNoteString.indexOf(" = ")));
+        String lastNoteString = noteStrings.get(noteStrings.size()-1);
+        final int lastNoteTick = Integer.parseInt(lastNoteString.substring(2,lastNoteString.indexOf(" = ")));
+
+        final int ticksPerBar = Constants.defaultTicksPerBeat*4;
+
+        final int lastBarIdx = (int)(Math.floor(((double)lastNoteTick)/ticksPerBar)); // TODO: move duplicate code with thingy in the (currently unused) for loop to a util method or sth // yes im using 2 different ways of doing the same thing (for first and last bar idx and tick) which stresses that this todo is relevant
+        final int lastBarStartTick = lastBarIdx*ticksPerBar;
+
+        final int firstBarStartTick = Utils.roundToCurrentBarTick(previousNoteTick);
+        final int firstBarIdx = firstBarStartTick/ticksPerBar; // (related to the TODO above) we are doing (n*x)/x here; there should be a util method that just doesnt *x to begin with
+        
+        final int firstPhraseBarIdx = 6 + firstBarIdx;
+        final int firstPhraseBarStartTick = firstPhraseBarIdx*ticksPerBar;
+
+        // // all of this is for stuff like skipping over breaks (long empty sections) 
+        // // which i'm going to add later
+        // int nextPhraseBarIdx = firstBarIdx+10; // a phrase which is 2 bars long, every 10 bars, starting from the 6th bar
+        // int currentBarIdx = (int)(Math.floor(((double)previousNoteTick)/ticksPerBar));
+        // int currentBarStartTick = currentBarIdx*ticksPerBar;
+        // int currentBarEndTick = currentBarStartTick+ticksPerBar;
+        // for(int i = 1; i < noteStrings.size(); i++) {
+        //     String noteString = noteStrings.get(i);
+        //     int currentNoteTick = Integer.parseInt(noteString.substring(2,noteString.indexOf(" = ")));
+        //     if(currentNoteTick >= currentBarEndTick) {
+        //         currentBarIdx = (int)(Math.floor(((double)currentNoteTick)/ticksPerBar));
+        //         currentBarStartTick = currentBarIdx*ticksPerBar;
+        //         currentBarEndTick = currentBarStartTick+ticksPerBar;
+        //     }
+        //     previousNoteTick = currentNoteTick;
+        // }
+        String ticksPer2BarsString = ""+(ticksPerBar*2);
+        for(int phraseBarIdx = firstPhraseBarIdx; phraseBarIdx < (lastBarIdx-4); phraseBarIdx += 10) {
+            phraseStrings.add("  " + phraseBarIdx*ticksPerBar + " = S 2 " + ticksPer2BarsString);
+        }
+        noteStrings.addAll(phraseStrings);
+        System.out.println("TODO: fix messy star power code");
     }
+
 }

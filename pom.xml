@@ -13,16 +13,16 @@
         <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
-
+    <build>
+        <sourceDirectory>./src</sourceDirectory>
+    </build>
 
     <dependencies>
-    
 
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20250107</version>
-            <type>bundle</type>
         </dependency>
 
     </dependencies>

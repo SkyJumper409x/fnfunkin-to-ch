@@ -40,6 +40,13 @@ public class Utils {
         return roundToNextBarTick(noteTick, Constants.defaultTicksPerBeat);
     }
     public static int roundToNextBarTick(int noteTick, int ticksPerBeat) {
+        int ticksPerBar = 4 * ticksPerBeat;
+        return roundToNextBarIndex(noteTick, ticksPerBeat) * ticksPerBar;
+    }
+    public static int roundToNextBarIndex(int noteTick) {
+        return roundToNextBarIndex(noteTick, Constants.defaultTicksPerBeat);
+    }
+    public static int roundToNextBarIndex(int noteTick, int ticksPerBeat) {
         // boldly assuming 4/4
         // this also assuming that the first bar starts on tick 0 but itll be fiiiine
         double ticksPerBar = 4*ticksPerBeat;
@@ -49,8 +56,15 @@ public class Utils {
         return roundToCurrentBarTick(noteTick, Constants.defaultTicksPerBeat);
     }
     public static int roundToCurrentBarTick(int noteTick, int ticksPerBeat) {
-        // same thing but floor instead of ceil
+        int ticksPerBar = 4 * ticksPerBeat;
+        return roundToCurrentBarIndex(noteTick,ticksPerBeat) * ticksPerBar;
+    }
+    public static int roundToCurrentBarIndex(int noteTick) {
+        return roundToCurrentBarIndex(noteTick, Constants.defaultTicksPerBeat);
+    }
+    public static int roundToCurrentBarIndex(int noteTick, int ticksPerBeat) {
+        // same thing except floor instead of ceil
         double ticksPerBar = 4*ticksPerBeat;
-        return (int) (Math.floor(((double)noteTick)/ticksPerBar)*ticksPerBar);
+        return (int) (Math.floor(((double)noteTick)/ticksPerBar));
     }
 }

@@ -284,7 +284,7 @@ public class MyMain {
         }
         chPrintln(pr, "}");
     }
-    private void generateStarPower(ArrayList<String> noteStrings) {
+    public static void generateStarPower(ArrayList<String> noteStrings) {
         ArrayList<String> phraseStrings = new ArrayList<String>();
         java.util.Collections.sort(noteStrings, noteStringComparator);
 
@@ -295,11 +295,11 @@ public class MyMain {
 
         final int ticksPerBar = Constants.defaultTicksPerBeat*4;
 
-        final int lastBarIdx = (int)(Math.floor(((double)lastNoteTick)/ticksPerBar)); // TODO: move duplicate code with thingy in the (currently unused) for loop to a util method or sth // yes im using 2 different ways of doing the same thing (for first and last bar idx and tick) which stresses that this todo is relevant
+        final int lastBarIdx = Utils.roundToCurrentBarIndex(lastNoteTick);
         final int lastBarStartTick = lastBarIdx*ticksPerBar;
 
-        final int firstBarStartTick = Utils.roundToCurrentBarTick(previousNoteTick);
-        final int firstBarIdx = firstBarStartTick/ticksPerBar; // (related to the TODO above) we are doing (n*x)/x here; there should be a util method that just doesnt *x to begin with
+        final int firstBarIdx = Utils.roundToCurrentBarIndex(previousNoteTick);
+        final int firstBarStartTick = firstBarIdx*ticksPerBar;
         
         final int firstPhraseBarIdx = 6 + firstBarIdx;
         final int firstPhraseBarStartTick = firstPhraseBarIdx*ticksPerBar;
